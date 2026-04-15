@@ -2,7 +2,7 @@
 #Integrantes
 
 Gisler Matias - 47089429 - matiasngisler@gmail.com
-Cortés Marcelo - 45297121
+Cortés Marcelo - 45297121 - marianocortes1423@gmail.com
 
 #Tematica 
 
