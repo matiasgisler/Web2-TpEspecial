@@ -10,4 +10,4 @@ Pagina web de fletes
 
 #Descripcion
 
-El sistema permite administrar pedidos de traslado de mercadería, asignando vehículos, choferes y rutas. También se gestionan clientes, estados de envío y pagos asociados.
+El sistema permite administrar pedidos de traslado de mercadería. También se gestionan clientes, estados de envío y pagos asociados.
