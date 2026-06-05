@@ -1,0 +1,110 @@
+<?php
+require_once __DIR__ . '/../modelos/fleteModelo.phtml';
+require_once __DIR__ . '/../vistas/fleteVista.php';
+require_once __DIR__ . '/../vistas/errorVista.php';
+class Controlador {
+    private $modelo;
+    private $vista;
+    private $vistaError;
+    public function __construct() {
+        $this->modelo = new fleteModelo();
+        $this->vista = new fleteVista();
+        $this->vistaError= new errorVista();
+    }
+    public function mostrarInicio($req){
+            $objetos = $this->modelo->conseguirObjetos();
+            
+            $this->vista->mostrarTabla($objetos,$req);
+    }
+    public function mostrarNoticia($id){
+        $pedido = $this->modelo->PedidoPorId($id);
+        if($pedido === false){
+            return $this->vistaError->mostrarError("El pedido no existe");
+        } 
+        $this->vista->MostrarPedido($pedido);
+    }
+    public function mostrarFormularioAgregar($req) {
+        
+        $clientes = $this->modelo->conseguirClientes();
+        
+        //le mando a la vista  el $req para saber si es admin
+        $this->vista->mostrarFormularioFlete($clientes, $req);
+    }
+    public function agregarPedido() {
+        // verifico campos vacios
+        if (empty($_POST['estado']) || empty($_POST['origen']) || empty($_POST['destino']) || empty($_POST['fechaentrega']) || empty($_POST['precio']) || empty($_POST['id_cliente'])) {
+            return $this->vistaError->mostrarError("Faltan completar datos obligatorios"); 
+        }
+
+        $estado = $_POST['estado'];
+        $origen = $_POST['origen'];
+        $destino = $_POST['destino'];
+        $fechaentrega = $_POST['fechaentrega'];
+        $precio = $_POST['precio'];
+        $id_cliente = $_POST['id_cliente'];
+
+        // le mando los datos al modelo para poder insertarlos
+        $this->modelo->insertarPedido($estado, $origen, $destino, $fechaentrega, $precio, $id_cliente);
+
+        header("Location: " . BASE_URL);
+    }
+    public function borrarPedido($id) {
+        if ($id) {
+            
+            // verificamos que exista
+            $pedidoExiste = $this->modelo->PedidoPorId($id);
+            if ($pedidoExiste) {
+                // si existe lo eliminamos y si no tira error
+                $this->modelo->eliminarPedido($id);
+                header("Location: " . BASE_URL);
+            } else {
+                $this->vistaError->mostrarError("El pedido que intentás eliminar no existe.");
+            }
+
+        } else {
+            $this->vistaError->mostrarError("No se especificó ningún pedido para eliminar."); 
+        }
+    }
+    public function mostrarFormularioEditar($id, $req) {
+        if ($id) {
+            
+            $pedido = $this->modelo->PedidoPorId($id);
+
+            if ($pedido) {
+                
+                $clientes = $this->modelo->conseguirClientes();
+
+                // Le envio a la vista el pedido viejo, la lista de clientes y la sesión $req
+                $this->vista->mostrarFormularioEditar($pedido, $clientes, $req);
+            } else {
+                
+                $this->vistaError->mostrarError("El pedido que intentás editar no existe.");
+            }
+
+        } else {
+            $this->vistaError->mostrarError("No se especificó qué pedido editar.");
+        }
+    }
+    public function editarPedido($id) {
+        if (!$id) {
+            return $this->vistaError->mostrarError("No se especificó el pedido a actualizar.");
+        }
+
+        
+        if (empty($_POST['estado']) || empty($_POST['origen']) || empty($_POST['destino']) || empty($_POST['fechaentrega']) || empty($_POST['precio']) || empty($_POST['id_cliente'])) {
+            return $this->vistaError->mostrarError("Error: Faltan completar datos obligatorios."); 
+        }
+
+        $estado = $_POST['estado'];
+        $origen = $_POST['origen'];
+        $destino = $_POST['destino'];
+        $fechaentrega = $_POST['fechaentrega'];
+        $precio = $_POST['precio'];
+        $id_cliente = $_POST['id_cliente'];
+
+        // 4. Le paso todo al modelo para que edite el pedido
+        $this->modelo->actualizarPedido($id, $estado, $origen, $destino, $fechaentrega, $precio, $id_cliente);
+
+        header("Location: " . BASE_URL);
+    }
+}
