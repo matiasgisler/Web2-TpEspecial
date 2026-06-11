@@ -1,0 +1,41 @@
+<?php
+require_once __DIR__ . '/autoConfigModelo.php';
+
+class pedidoModelo extends Model {
+    
+    public function __construct() {
+        parent::__construct(); 
+    }
+
+    public function conseguirPedidos(){
+        $accion = $this->db->prepare('SELECT * FROM `pedidos`'); // [cite: 87]
+        $accion -> execute(); 
+        $objetos = $accion->fetchAll(PDO::FETCH_OBJ);
+        
+        return $objetos;
+    }
+
+    public function PedidoPorId($id){
+        $accion = $this->db->prepare('SELECT * FROM pedidos WHERE id_pedido = ?'); // [cite: 88]
+        $accion -> execute([$id]); 
+        $pedido = $accion->fetch(PDO::FETCH_OBJ);
+        return $pedido;
+    }
+    
+    public function insertarPedido($estado, $origen, $destino, $fechaentrega, $precio, $id_cliente, $imagen_url) {
+        $accion = $this->db->prepare('INSERT INTO pedidos (estado, origen, destino, fechaentrega, precio, id_cliente, imagen_url) VALUES (?, ?, ?, ?, ?, ?, ?)'); // [cite: 89]
+        $accion->execute([$estado, $origen, $destino, $fechaentrega, $precio, $id_cliente, $imagen_url]); 
+        
+        return $this->db->lastInsertId();
+    }
+
+    public function eliminarPedido($id) {
+        $accion = $this->db->prepare('DELETE FROM pedidos WHERE id_pedido = ?'); 
+        $accion->execute([$id]); 
+    }
+
+    public function actualizarPedido($id, $estado, $origen, $destino, $fechaentrega, $precio, $id_cliente, $imagen_url) {
+        $accion = $this->db->prepare('UPDATE pedidos SET estado = ?, origen = ?, destino = ?, fechaentrega = ?, precio = ?, id_cliente = ?, imagen_url = ? WHERE id_pedido = ?'); // [cite: 91]
+        $accion->execute([$estado, $origen, $destino, $fechaentrega, $precio, $id_cliente, $imagen_url, $id]);
+    }
+}

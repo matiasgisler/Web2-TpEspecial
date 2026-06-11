@@ -1,0 +1,16 @@
+<?php
+require_once __DIR__ . '/autoConfigModelo.php';
+
+class clienteModelo extends Model {
+    
+    public function __construct() {
+        parent::__construct(); 
+    }
+
+    public function conseguirClientes() {
+        $accion = $this->db->prepare('SELECT * FROM clientes'); 
+        $accion->execute();
+        $clientes = $accion->fetchAll(PDO::FETCH_OBJ);
+        return $clientes;
+    }
+}

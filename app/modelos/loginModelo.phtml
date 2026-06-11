@@ -1,0 +1,16 @@
+<?php
+require_once __DIR__ . '/autoConfigModelo.php';
+
+class loginModelo extends Model { 
+
+    public function __construct() {
+        parent::__construct(); 
+    }
+
+    public function obtenerAdminPorNombre($nombre){
+        $accion= $this->db->prepare('Select * FROM administradores WHERE nombre = ? ');
+        $accion->execute([$nombre]);
+        $administrador = $accion->fetch(PDO::FETCH_OBJ);
+        return $administrador;
+    }
+}
